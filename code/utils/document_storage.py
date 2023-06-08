@@ -25,7 +25,7 @@ class AzureBlobStorageClient:
 
     def upload_confluence(self, doc: Document, confluence_space_name: str) -> str:
         return self.upload_file(
-            bytes_data=doc.page_content,
+            bytes_data=doc.metadata["title"] + " " + doc.page_content,
             file_name=f"confluence/{confluence_space_name}/{doc.metadata['id']}/v{doc.metadata['version']}/{doc.metadata['title']}.txt",
             content_type='text/plain; charset=utf-8',
             metadata={

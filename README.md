@@ -21,7 +21,7 @@ deactivate
 Install `PIP` Requirements
 
 ```console
-pip install -r requirements.txt
+pip install -r code/requirements.txt
 ```
 
 configure your .env as Environment variables

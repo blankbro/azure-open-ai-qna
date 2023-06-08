@@ -43,5 +43,5 @@ with st.expander("Add all confluence document to the knowledge base", expanded=F
                 continue
 
             # 上传到 Azure Blob Storage
-            azureBlobStorageClient.upload_confluence(doc)
+            azureBlobStorageClient.upload_confluence(doc, confluence_space_name)
             st.write(f"{i + 1}【{page['title']}】ok")

@@ -36,3 +36,9 @@ run
 ```console
 streamlit run code/Home.py
 ```
+
+docker run
+
+```
+./boot.sh
+```

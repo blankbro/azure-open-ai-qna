@@ -54,9 +54,9 @@ class ConfluenceLoaderHelper:
             spaces.append(space)
         return spaces
 
-    def get_all_pages_from_space(self, space_key: str, max_pages: Optional[int] = -1):
+    def get_all_pages_from_space(self, space_key: str, max_pages: Optional[int] = None):
         start = 0
-        limit = min(50, max_pages)
+        limit = 50 if max_pages is None or max_pages <= 0 else min(50, max_pages)
         pages = []
         while True:
             result = self.confluence.get_all_pages_from_space(
@@ -66,7 +66,7 @@ class ConfluenceLoaderHelper:
             if len(result) < limit:
                 break
             start += limit
-            if max_pages.numerator != -1 and len(pages) >= max_pages.numerator:
+            if max_pages and max_pages > 0 and len(pages) >= max_pages.numerator:
                 break
         return pages
 

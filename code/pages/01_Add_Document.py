@@ -27,7 +27,7 @@ with st.expander("Add all confluence document to the knowledge base", expanded=F
 
         # 获取空间的所有页面
         confluence_space_key = space_name_key_map[confluence_space_name]
-        pages = confluenceLoaderHelper.get_all_pages_from_space(confluence_space_key, max_pages=10)
+        pages = confluenceLoaderHelper.get_all_pages_from_space(confluence_space_key, max_pages=-1)
         st.write(f"共{len(pages)}个页面")
         placeholder = st.empty()
 

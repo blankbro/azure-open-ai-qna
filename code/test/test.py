@@ -1,12 +1,10 @@
 from utils.document_loader import ConfluenceLoaderHelper
+from utils.document_storage import AzureBlobStorageClient
 
 if __name__ == "__main__":
-    clh = ConfluenceLoaderHelper()
-    documents = clh.confluence_load(space_key="9CK", max_pages=1000)
-    # documents = clh.confluence_load(page_ids=["90143794"], max_pages=1)
+    confluenceHelper = ConfluenceLoaderHelper()
+    docs = confluenceHelper.load_all_pages_from_space("9CK", max_pages=1)
 
-    for document in documents:
-        if not document.page_content:
-            print(document.metadata["title"] + " page content is empty")
-        else:
-            print(document)
+    azureBlobStorageClient = AzureBlobStorageClient()
+    source_url = azureBlobStorageClient.upload_confluence(docs[0])
+    print(source_url)

@@ -71,7 +71,7 @@ class ConfluenceLoaderHelper:
         return pages
 
     def load_single_page(self, page: dict):
-        doc = self.confluenceLoader.process_page(page, include_attachments=True, include_comments=False)
+        doc = self.confluenceLoader.process_page(page, include_attachments=False, include_comments=False)
         if not doc.page_content:
             return None
         doc.metadata["version"] = page["version"]["number"]

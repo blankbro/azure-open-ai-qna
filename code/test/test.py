@@ -12,7 +12,13 @@ def delete_files():
         azureBlobStorageClient.delete_file(file["filename"])
 
 
-def upload_file():
+def load_confluence():
+    confluenceHelper = ConfluenceLoaderHelper()
+    docs = confluenceHelper.load(page_ids=["73138262"])
+    print(docs)
+
+
+def upload_confluence():
     confluenceHelper = ConfluenceLoaderHelper()
     docs = confluenceHelper.load_all_pages_from_space("9CK", max_pages=1)
 
@@ -29,4 +35,5 @@ def chinese_str():
 
 if __name__ == "__main__":
     # upload_file()
-    chinese_str()
+    # chinese_str()
+    load_confluence()

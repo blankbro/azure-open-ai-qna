@@ -36,7 +36,8 @@ class ConfluenceLoaderHelper:
             page_ids=page_ids,
             include_attachments=True,
             limit=limit,
-            max_pages=max_pages
+            max_pages=max_pages,
+            ocr_languages="eng+chi_sim"
         )
 
     def get_all_spaces(self):
@@ -71,7 +72,7 @@ class ConfluenceLoaderHelper:
         return pages
 
     def load_single_page(self, page: dict):
-        doc = self.confluenceLoader.process_page(page, include_attachments=False, include_comments=False)
+        doc = self.confluenceLoader.process_page(page, include_attachments=False, include_comments=False, ocr_languages="eng+chi_sim")
         if not doc.page_content:
             return None
         doc.metadata["version"] = page["version"]["number"]

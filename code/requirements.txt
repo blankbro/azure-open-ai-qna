@@ -2,7 +2,7 @@ python-dotenv==1.0.0
 streamlit==1.23.1
 
 # langchain
-langchain==0.0.194
+langchain==0.0.198
 atlassian-python-api==3.38.0
 beautifulsoup4==4.12.2
 pytesseract==0.3.10

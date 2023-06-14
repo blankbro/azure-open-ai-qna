@@ -2,7 +2,7 @@ import sys
 
 import streamlit as st
 
-from utils.document_loader import ConfluenceLoaderHelper
+from utils.document_loader.confluence_loader_helper import ConfluenceLoaderHelper
 from utils.document_storage import AzureBlobStorageClient
 
 st.set_page_config(layout="wide")

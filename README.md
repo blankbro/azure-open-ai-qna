@@ -42,3 +42,11 @@ docker run
 ```
 ./boot.sh
 ```
+
+### 部署其它应用
+
+```
+# MySQL 挂载启动
+docker run -d -p 3306:3306 --privileged=true -v /app/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=111111 --name mysql mysql
+
+```

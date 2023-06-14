@@ -1,7 +1,7 @@
 import os
 
 from langchain import SQLDatabase, SQLDatabaseChain
-from langchain.llms import AzureOpenAI
+from langchain.chat_models import AzureChatOpenAI
 
 import utils.env as env
 
@@ -14,9 +14,9 @@ os.environ["OPENAI_API_BASE"] = env.AZURE_OPENAI_API_BASE
 class DatabaseLLMHelper:
 
     def __init__(self):
-        self.llm = AzureOpenAI(
+        self.llm = AzureChatOpenAI(
             temperature=0.1,
-            deployment_name=env.AZURE_OPENAI_COMPLETION_MODEL_DEPLOYMENT_NAME,
+            deployment_name=env.AZURE_OPENAI_CHAT_MODEL_DEPLOYMENT_NAME,
         )
 
         self.db = SQLDatabase.from_uri(

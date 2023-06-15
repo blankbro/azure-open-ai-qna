@@ -49,7 +49,7 @@ if 'source_documents' not in st.session_state:
 
 llm_helper = DocumentLLMHelper()
 
-col1, col2 = st.columns([9, 1])
+col1, col2 = st.columns([8, 2])
 with col1:
     st.text_input("You: ", placeholder="type your question", key="input")
 with col2:

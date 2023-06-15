@@ -27,7 +27,7 @@ class DatabaseLLMHelper:
                                                   return_intermediate_steps=True)
 
     def get_response(self, prompt: str):
-        question = prompt
+        question = f"{prompt} reply in 中文"
         result = self.db_chain(question)
         if len(result["intermediate_steps"]) == 6:
             return result["result"], result["intermediate_steps"][1], result["intermediate_steps"][3]

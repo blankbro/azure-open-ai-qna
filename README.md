@@ -34,7 +34,7 @@ vi .env # or use whatever you feel comfortable with
 run
 
 ```console
-streamlit run code/Home.py
+streamlit run code/Chat.py
 ```
 
 docker run

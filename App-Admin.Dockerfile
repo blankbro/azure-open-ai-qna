@@ -6,6 +6,8 @@ WORKDIR /usr/local/src/azure-open-ai-qna
 RUN pip install -r requirements.txt
 
 # 下载OCR需要的简体中文库
+RUN mkdir -p /usr/share/tessdata
+RUN curl -o /usr/share/tessdata/eng.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/eng.traineddata
 RUN curl -o /usr/share/tessdata/chi_sim.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/chi_sim.traineddata
 
 COPY ./code /usr/local/src/azure-open-ai-qna

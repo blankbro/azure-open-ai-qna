@@ -14,7 +14,7 @@ def clear_chat_data():
 
 def send_msg():
     if st.session_state['input']:
-        result, sources = llm_helper.get_response(st.session_state['input'], st.session_state['chat_history'])
+        result, sources, _ = llm_helper.get_response(st.session_state['input'], st.session_state['chat_history'])
         st.session_state['chat_history'].append((st.session_state['input'], result))
         st.session_state['source_documents'].append(sources)
         st.session_state['input'] = ""

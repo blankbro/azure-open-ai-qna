@@ -7,7 +7,7 @@ set -e
 git pull
 
 # 删除旧容器
-if docker ps -a | grep -q "azure-open-ai-user"; then
+if docker ps -a | grep -q "azure-open-ai-qna_user"; then
     docker rm -f azure-open-ai-qna_user
 fi
 

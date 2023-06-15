@@ -14,8 +14,7 @@ COPY ./code /usr/local/src/azure-open-ai-qna
 
 # 删除自测页面（Dockerfile.dockerignore不好使，所以用了这种方法）
 RUN rm -rf pages/04_Add_Document.py \
-    Home.py\
-    pages/02_Chat_MySQL.py
+    Home.py
 
 RUN mv pages/01_Chat.py Chat.py
 

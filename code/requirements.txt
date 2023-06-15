@@ -5,17 +5,12 @@ streamlit==1.23.1
 streamlit_chat==0.0.2.2
 
 # langchain
-langchain==0.0.198
+langchain==0.0.200
 atlassian-python-api==3.38.0
 beautifulsoup4==4.12.2
 pytesseract==0.3.10
 Pillow==9.5.0
 lxml==4.9.2
-
-# video loader
-bilibili-api==9.1.0
-youtube-transcript-api==0.6.0
-pytube==15.0.0
 
 # azure storage
 azure-storage-blob==12.16.0

@@ -5,7 +5,7 @@ from atlassian import Confluence
 from langchain.docstore.document import Document
 from langchain.document_loaders import ConfluenceLoader
 
-import utils.env as env
+import core.common.env as env
 
 
 class ConfluenceLoaderHelper:

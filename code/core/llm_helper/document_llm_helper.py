@@ -7,12 +7,12 @@ from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.chat_models import AzureChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 
-import utils.env as env
-from custom_handler import LLMChainCallbackHandler
-from custom_prompt import COMPLETION_PROMPT
-from document_util import document_to_markdown_link
-from utils.document_storage.azure_blob_storage import AzureBlobStorageClient
-from utils.vector_db.redis import RedisExtended
+import core.common.env as env
+from core.llm_helper.custom_handler import LLMChainCallbackHandler
+from core.llm_helper.custom_prompt import COMPLETION_PROMPT
+from core.llm_helper.document_util import document_to_markdown_link
+from core.document_storage.azure_blob_storage import AzureBlobStorageClient
+from core.vector_db.redis import RedisExtended
 
 os.environ["OPENAI_API_TYPE"] = "azure"
 os.environ["OPENAI_API_VERSION"] = "2023-03-15-preview"

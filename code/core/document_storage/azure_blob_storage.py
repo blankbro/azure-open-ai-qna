@@ -2,7 +2,7 @@ import base64
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 
-import utils.env as env
+import core.common.env as env
 from azure.storage.blob import BlobServiceClient, ContentSettings, generate_container_sas
 from langchain.docstore.document import Document
 

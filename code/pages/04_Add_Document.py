@@ -1,11 +1,30 @@
+import os
 import sys
 
 import streamlit as st
 
-from utils.document_loader.confluence_loader_helper import ConfluenceLoaderHelper
-from utils.document_storage.azure_blob_storage import AzureBlobStorageClient
+import core.common.env as env
+from core.document_loader.confluence_loader_helper import ConfluenceLoaderHelper
+from core.document_storage.azure_blob_storage import AzureBlobStorageClient
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title=env.PAGE_TITLE,
+    page_icon=os.path.join('images', 'openai.ico'),
+    menu_items={
+        'Get help': None,
+        'Report a bug': None,
+        'About': None
+    }
+)
+
+hide_streamlit_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                </style>
+                """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 with st.expander("Add all confluence document to the knowledge base", expanded=False):
     confluenceLoaderHelper = ConfluenceLoaderHelper()

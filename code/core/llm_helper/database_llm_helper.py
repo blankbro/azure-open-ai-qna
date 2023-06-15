@@ -3,7 +3,7 @@ import os
 from langchain import SQLDatabase, SQLDatabaseChain
 from langchain.chat_models import AzureChatOpenAI
 
-import utils.env as env
+import core.common.env as env
 
 os.environ["OPENAI_API_TYPE"] = "azure"
 os.environ["OPENAI_API_VERSION"] = "2023-03-15-preview"

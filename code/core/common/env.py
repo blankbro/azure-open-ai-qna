@@ -26,3 +26,5 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 REDIS_ADDRESS = os.getenv('REDIS_ADDRESS')
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 REDIS_PORT = int(os.getenv('REDIS_PORT'))
+
+PAGE_TITLE = os.getenv("PAGE_TITLE")

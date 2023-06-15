@@ -17,7 +17,7 @@ if docker image ls | grep -q "azure-open-ai-qna"; then
 fi
 
 # 打包新镜像
-docker build . -f Dockerfile -t azure-open-ai-qna
+docker build . -f App-Admin.Dockerfile -t azure-open-ai-qna
 
 # 启动新容器
 docker run -d --env-file .env -p 8088:80 --name azure-open-ai-qna azure-open-ai-qna

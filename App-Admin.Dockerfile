@@ -13,8 +13,7 @@ RUN curl -o /usr/share/tessdata/chi_sim.traineddata https://github.com/tesseract
 COPY ./code /usr/local/src/azure-open-ai-qna
 
 # 删除自测页面（Dockerfile.dockerignore不好使，所以用了这种方法）
-RUN rm -rf pages/04_Add_Document.py \
-    Home.py
+RUN rm -rf Home.py
 
 RUN mv pages/01_Chat.py Chat.py
 

@@ -23,8 +23,10 @@ class DatabaseLLMHelper:
             database_uri=f"mysql+pymysql://{env.MYSQL_USERNAME}:{env.MYSQL_PASSWORD}@{env.MYSQL_ADDRESS}/{env.MYSQL_DATABASE}",
         )
 
-        self.db_chain = SQLDatabaseChain.from_llm(llm=self.llm, db=self.db, verbose=False,
-                                                  return_intermediate_steps=True)
+        self.db_chain = SQLDatabaseChain.from_llm(
+            llm=self.llm, db=self.db, verbose=False,
+            return_intermediate_steps=True
+        )
 
     def get_response(self, prompt: str):
         question = f"{prompt} reply in 中文"

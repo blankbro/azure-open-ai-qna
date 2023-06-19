@@ -1,8 +1,8 @@
 import base64
+import os
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 
-import core.common.env as env
 from azure.storage.blob import BlobServiceClient, ContentSettings, generate_container_sas
 from langchain.docstore.document import Document
 
@@ -17,10 +17,10 @@ def chinese_decode(encode_str) -> str:
 
 class AzureBlobStorageClient:
     def __init__(self, account_name: str = None, account_key: str = None, container_name: str = None):
-        self.account_name: str = account_name if account_name else env.AZURE_BLOB_STORAGE_ACCOUNT_NAME
-        self.account_key: str = account_key if account_key else env.AZURE_BLOB_STORAGE_ACCOUNT_KEY
+        self.account_name: str = account_name if account_name else os.getenv("AZURE_BLOB_STORAGE_ACCOUNT_NAME")
+        self.account_key: str = account_key if account_key else os.getenv("AZURE_BLOB_STORAGE_ACCOUNT_KEY")
         self.connect_str: str = f"DefaultEndpointsProtocol=https;AccountName={self.account_name};AccountKey={self.account_key};EndpointSuffix=core.windows.net"
-        self.container_name: str = container_name if container_name else env.AZURE_BLOB_STORAGE_CONTAINER_NAME
+        self.container_name: str = container_name if container_name else os.getenv("AZURE_BLOB_STORAGE_CONTAINER_NAME")
         self.blob_service_client: BlobServiceClient = BlobServiceClient.from_connection_string(self.connect_str)
 
     def upload_confluence(self, doc: Document, confluence_space_name: str) -> str:

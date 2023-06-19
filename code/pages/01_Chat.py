@@ -1,9 +1,12 @@
 import os
 
-import core.common.env as env
 import streamlit as st
-from core.llm_helper.document_llm_helper import DocumentLLMHelper
+from dotenv import load_dotenv
 from streamlit_chat import message
+
+from server.model.document_llm_helper import DocumentLLMHelper
+
+load_dotenv()
 
 
 def clear_chat_data():
@@ -22,7 +25,7 @@ def send_msg():
 
 st.set_page_config(
     layout="wide",
-    page_title=env.PAGE_TITLE,
+    page_title=os.getenv("PAGE_TITLE"),
     page_icon=os.path.join('images', 'openai.ico'),
     menu_items={
         'Get help': None,

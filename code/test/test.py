@@ -1,7 +1,7 @@
 import base64
 
-from core.document_loader.confluence_loader_helper import ConfluenceLoaderHelper
-from core.document_storage.azure_blob_storage import AzureBlobStorageClient
+from server.text_loader.confluence_loader import ConfluenceLoaderHelper
+from server.file_storage.azure_blob_storage import AzureBlobStorageClient
 
 
 def delete_files():

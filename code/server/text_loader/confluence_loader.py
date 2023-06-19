@@ -1,27 +1,24 @@
+import os
 from datetime import datetime
 from typing import List, Optional
 
 from atlassian import Confluence
+from dotenv import load_dotenv
 from langchain.docstore.document import Document
 from langchain.document_loaders import ConfluenceLoader
-
-import core.common.env as env
 
 
 class ConfluenceLoaderHelper:
 
-    def __init__(self):
-        self.confluenceLoader = ConfluenceLoader(
-            url=env.CONFLUENCE_URL,
-            username=env.CONFLUENCE_USERNAME,
-            api_key=env.CONFLUENCE_PASSWORD,
-        )
+    def __init__(self, url: str = None, username: str = None, password: str = None):
+        load_dotenv()
 
-        self.confluence = Confluence(
-            url=env.CONFLUENCE_URL,
-            username=env.CONFLUENCE_USERNAME,
-            password=env.CONFLUENCE_PASSWORD,
-        )
+        url = os.getenv("CONFLUENCE_URL") if url is None else url
+        username = os.getenv("CONFLUENCE_USERNAME") if username is None else username
+        password = os.getenv("CONFLUENCE_PASSWORD") if password is None else password
+        
+        self.confluenceLoader = ConfluenceLoader(url=url, username=username, api_key=password)
+        self.confluence = Confluence(url=url, username=username, password=password)
 
     # 默认的load方式，有一些局限
     def load(

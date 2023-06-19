@@ -1,14 +1,15 @@
 import os
 
+from dotenv import load_dotenv
 from langchain import SQLDatabase, SQLDatabaseChain
 from langchain.chat_models import AzureChatOpenAI
 
-import core.common.env as env
+load_dotenv()
 
 os.environ["OPENAI_API_TYPE"] = "azure"
 os.environ["OPENAI_API_VERSION"] = "2023-03-15-preview"
-os.environ["OPENAI_API_KEY"] = env.AZURE_OPENAI_API_KEY
-os.environ["OPENAI_API_BASE"] = env.AZURE_OPENAI_API_BASE
+os.environ["OPENAI_API_KEY"] = os.getenv("AZURE_OPENAI_API_KEY")
+os.environ["OPENAI_API_BASE"] = os.getenv("AZURE_OPENAI_API_BASE")
 
 
 class DatabaseLLMHelper:
@@ -16,11 +17,11 @@ class DatabaseLLMHelper:
     def __init__(self):
         self.llm = AzureChatOpenAI(
             temperature=0.1,
-            deployment_name=env.AZURE_OPENAI_CHAT_MODEL_DEPLOYMENT_NAME,
+            deployment_name=os.getenv("AZURE_OPENAI_CHAT_MODEL_DEPLOYMENT_NAME"),
         )
 
         self.db = SQLDatabase.from_uri(
-            database_uri=f"mysql+pymysql://{env.MYSQL_USERNAME}:{env.MYSQL_PASSWORD}@{env.MYSQL_ADDRESS}/{env.MYSQL_DATABASE}",
+            database_uri=f"mysql+pymysql://{os.getenv('MYSQL_USERNAME')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_ADDRESS')}/{os.getenv('MYSQL_DATABASE')}",
         )
 
         self.db_chain = SQLDatabaseChain.from_llm(

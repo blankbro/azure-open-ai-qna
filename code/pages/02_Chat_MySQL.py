@@ -1,14 +1,16 @@
 import os
 
 import streamlit as st
+from dotenv import load_dotenv
 from streamlit_chat import message
 
-import core.common.env as env
-from core.llm_helper.database_llm_helper import DatabaseLLMHelper
+from server.model.mysql_llm_helper import DatabaseLLMHelper
+
+load_dotenv()
 
 st.set_page_config(
     layout="wide",
-    page_title=env.PAGE_TITLE,
+    page_title=os.getenv("PAGE_TITLE"),
     page_icon=os.path.join('images', 'openai.ico'),
     menu_items={
         'Get help': None,

@@ -2,14 +2,16 @@ import os
 import sys
 
 import streamlit as st
+from dotenv import load_dotenv
 
-import core.common.env as env
-from core.document_loader.confluence_loader_helper import ConfluenceLoaderHelper
-from core.document_storage.azure_blob_storage import AzureBlobStorageClient
+from server.text_loader.confluence_loader import ConfluenceLoaderHelper
+from server.file_storage.azure_blob_storage import AzureBlobStorageClient
+
+load_dotenv()
 
 st.set_page_config(
     layout="wide",
-    page_title=env.PAGE_TITLE,
+    page_title=os.getenv("PAGE_TITLE"),
     page_icon=os.path.join('images', 'openai.ico'),
     menu_items={
         'Get help': None,

@@ -14,15 +14,13 @@ os.environ["OPENAI_API_BASE"] = os.getenv("AZURE_OPENAI_API_BASE")
 
 class DatabaseLLMHelper:
 
-    def __init__(self):
+    def __init__(self, database_uri: str):
         self.llm = AzureChatOpenAI(
             temperature=0.1,
             deployment_name=os.getenv("AZURE_OPENAI_CHAT_MODEL_DEPLOYMENT_NAME"),
         )
 
-        self.db = SQLDatabase.from_uri(
-            database_uri=f"mysql+pymysql://{os.getenv('MYSQL_USERNAME')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_ADDRESS')}/{os.getenv('MYSQL_DATABASE')}",
-        )
+        self.db = SQLDatabase.from_uri(database_uri=database_uri)
 
         self.db_chain = SQLDatabaseChain.from_llm(
             llm=self.llm, db=self.db, verbose=False,

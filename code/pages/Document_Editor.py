@@ -1,5 +1,3 @@
-import traceback
-
 import requests
 import streamlit as st
 
@@ -33,17 +31,12 @@ def delete_embeddings():
     placeholder.empty()
 
 
-try:
-    llm_helper = DocumentLLMHelper()
+llm_helper = DocumentLLMHelper()
 
-    files_data = llm_helper.get_files()
+files_data = llm_helper.get_files()
 
-    st.dataframe(files_data, use_container_width=True)
+st.dataframe(files_data, use_container_width=True)
 
-    st.button("提取pdf中的文本，并生成embeddings向量", on_click=convert_file_and_add_embeddings)
+st.button("提取pdf中的文本，并生成embeddings向量", on_click=convert_file_and_add_embeddings)
 
-    st.button("删除所有 embeddings 向量", on_click=delete_embeddings)
-
-except Exception as e:
-    traceback.print_exc()
-    st.error(traceback.format_exc())
+st.button("删除所有 embeddings 向量", on_click=delete_embeddings)

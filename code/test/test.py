@@ -1,7 +1,11 @@
 import base64
+import os
+from dotenv import load_dotenv
 
 from server.text_loader.confluence_loader import ConfluenceLoaderHelper
 from server.file_storage.azure_blob_storage import AzureBlobStorageClient
+
+load_dotenv()
 
 
 def delete_files():
@@ -33,7 +37,14 @@ def chinese_str():
     print(decode_str)
 
 
+def list_env_var():
+    mysql_list_str = os.getenv("MYSQL_URL_LIST")
+    mysql_list = eval(mysql_list_str)
+    print(mysql_list)
+
+
 if __name__ == "__main__":
     # upload_file()
     # chinese_str()
-    load_confluence()
+    # load_confluence()
+    list_env_var()

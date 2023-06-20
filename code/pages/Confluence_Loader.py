@@ -47,6 +47,6 @@ for space in spaces:
     space_names.append(space["name"])
     space_name_key_map[space["name"]] = space["key"]
 
-st.selectbox("Confluence 空间列表", space_names, key="confluence_space_name", label_visibility="hidden")
+st.selectbox("Select confluence space", space_names, key="confluence_space_name")
 
 st.button("Load confluence document", on_click=load)

@@ -23,21 +23,17 @@ class AzureBlobStorageClient:
         self.container_name: str = container_name if container_name else os.getenv("AZURE_BLOB_STORAGE_CONTAINER_NAME")
         self.blob_service_client: BlobServiceClient = BlobServiceClient.from_connection_string(self.connect_str)
 
-    def upload_confluence(self, doc: Document, confluence_space_name: str) -> str:
-        return self.upload_file(
-            bytes_data=doc.metadata["title"] + " " + doc.page_content,
+    def upload_confluence_text(self, doc: Document, confluence_space_name: str) -> str:
+        return self.upload_blob(
+            data=doc.metadata["title"] + " " + doc.page_content,
             file_name=f"confluence/{confluence_space_name}/{doc.metadata['id']}/v{doc.metadata['version']}/{doc.metadata['title']}.txt",
             content_type='text/plain; charset=utf-8',
             metadata={
-                "link": f"{doc.metadata['source']}",
-                # 由于底层组件的限制，header 中不允许出现中文。写入的时候通过base64编码，读取的时候再通过base64解码
-                "title": chinese_encode(doc.metadata["title"]),
-                "version": f"{doc.metadata['version']}",
-                "last_edit_time": f"{doc.metadata['last_edit_time']}"
+                "confluence_url": doc.metadata["source"]
             }
         )
 
-    def upload_file(self, bytes_data, file_name, content_type, metadata: Optional[Dict[str, str]] = None, ) -> str:
+    def upload_blob(self, data, file_name, content_type, metadata: Optional[Dict[str, str]] = None) -> str:
         """
             content_type:
                 txt ==> text/plain; charset=utf-8
@@ -47,7 +43,7 @@ class AzureBlobStorageClient:
         blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=file_name)
         # Upload the created file
         blob_client.upload_blob(
-            bytes_data, overwrite=True, content_settings=ContentSettings(content_type=content_type), metadata=metadata
+            data, overwrite=True, content_settings=ContentSettings(content_type=content_type), metadata=metadata
         )
         # Generate a SAS URL to the blob and return it
         return blob_client.url + '?' + self.get_container_sas()
@@ -82,33 +78,35 @@ class AzureBlobStorageClient:
                 converted_files[blob.name] = self.get_blob_sas(blob.name, sas)
             else:
                 files.append({
-                    "filename": blob.name,
-                    "converted": blob.metadata.get('converted', 'false') == 'true' if blob.metadata else False,
+                    "source_file_name": blob.name.split("/")[-1],
+                    "source_file_url": blob.metadata.get('confluence_url', self.get_blob_sas(blob.name, sas)),
+                    "source_file_key": blob.name,
                     "embeddings_added": blob.metadata.get('embeddings_added', 'false') == 'true' if blob.metadata else False,
-                    "fullpath": self.get_blob_sas(blob.name, sas),
-                    "converted_filename": blob.metadata.get('converted_filename', '') if blob.metadata else '',
-                    "converted_path": ""
                 })
 
         # 补充 converted_path
         for file in files:
-
-            if file["filename"].endswith('.txt'):
+            if file["source_file_name"].endswith('.txt'):
                 file['converted'] = True
-                file['converted_filename'] = file['filename']
-                file['converted_path'] = file['fullpath']
+                file['converted_file_name'] = file['source_file_name']
+                file['converted_file_url'] = self.get_blob_sas(file['source_file_key'], sas)
                 continue
-            converted_filename = "converted/" + file.get('filename', '') + ".txt"
+            converted_filename = f"converted/{file.get('source_file_key')}.txt"
             if converted_filename in converted_files:
                 file['converted'] = True
-                file['converted_filename'] = converted_filename
-                file['converted_path'] = converted_files[converted_filename]
+                file['converted_file_name'] = converted_filename
+                file['converted_file_url'] = converted_files[converted_filename]
             else:
                 file['converted'] = False
-                file['converted_filename'] = ""
-                file['converted_path'] = ""
+                file['converted_file_name'] = ""
+                file['converted_file_url'] = ""
 
         return files
+
+    def delete_files(self, name_starts_with):
+        container_client = self.blob_service_client.get_container_client(self.container_name)
+        blob_name_list = container_client.list_blob_names(name_starts_with=name_starts_with)
+        container_client.delete_blobs(*blob_name_list)
 
     def delete_file(self, file_name):
         blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=file_name)

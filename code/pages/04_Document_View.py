@@ -11,4 +11,4 @@ col1, col2, col3 = st.columns([2, 1, 1])
 
 files_data = blob_client.get_files()
 
-st.dataframe(files_data, use_container_width=True)
+st.dataframe(files_data, column_order=("source_file_name", "converted", "embeddings_added", "source_file_url", "converted_file_url"))

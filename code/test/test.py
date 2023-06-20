@@ -27,7 +27,7 @@ def upload_confluence():
     docs = confluenceHelper.load_pages_from_space("9CK", max_pages=1)
 
     azureBlobStorageClient = AzureBlobStorageClient()
-    source_url = azureBlobStorageClient.upload_confluence(docs[0], "9CK")
+    source_url = azureBlobStorageClient.upload_confluence_text(docs[0], "9CK")
     print(source_url)
 
 

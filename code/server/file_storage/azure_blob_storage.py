@@ -71,7 +71,7 @@ class AzureBlobStorageClient:
     def get_files(self, name_starts_with: str = None):
         # 获取文件列表
         container_client = self.blob_service_client.get_container_client(self.container_name)
-        blob_list = container_client.list_blobs(name_starts_with=name_starts_with)
+        blob_list = container_client.list_blobs(name_starts_with=name_starts_with, include='metadata')
         sas = self.get_container_sas()
 
         # 组装信息
@@ -92,6 +92,12 @@ class AzureBlobStorageClient:
 
         # 补充 converted_path
         for file in files:
+
+            if file["filename"].endswith('.txt'):
+                file['converted'] = True
+                file['converted_filename'] = file['filename']
+                file['converted_path'] = file['fullpath']
+                continue
             converted_filename = "converted/" + file.get('filename', '') + ".txt"
             if converted_filename in converted_files:
                 file['converted'] = True

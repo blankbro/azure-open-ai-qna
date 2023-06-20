@@ -1,12 +1,10 @@
-import os
-
 import streamlit as st
-from dotenv import load_dotenv
 from streamlit_chat import message
 
+from pages.common.page_config import load_page_config
 from server.model.document_llm_helper import DocumentLLMHelper
 
-load_dotenv()
+load_page_config()
 
 
 def clear_chat_data():
@@ -23,25 +21,6 @@ def send_msg():
         st.session_state['input'] = ""
 
 
-st.set_page_config(
-    layout="wide",
-    page_title=os.getenv("PAGE_TITLE"),
-    page_icon=os.path.join('images', 'openai.ico'),
-    menu_items={
-        'Get help': None,
-        'Report a bug': None,
-        'About': None
-    }
-)
-
-hide_streamlit_style = """
-                <style>
-                #MainMenu {visibility: hidden;}
-                footer {visibility: hidden;}
-                </style>
-                """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
 # Initialize chat history
 if 'question' not in st.session_state:
     st.session_state['question'] = None
@@ -53,14 +32,17 @@ if 'source_documents' not in st.session_state:
 llm_helper = DocumentLLMHelper()
 
 col1, col2 = st.columns([8, 2])
+
 with col1:
     st.text_input("You: ", placeholder="type your question", key="input")
+
 with col2:
     st.text("")
     st.text("")
     st.button("Send", on_click=send_msg)
 
 col1, col2 = st.columns([1, 1])
+
 with col1:
     clear_chat = st.button("Clear chat", key="clear_chat", on_click=clear_chat_data)
 

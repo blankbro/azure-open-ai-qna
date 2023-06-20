@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os
 import re
+import urllib
 
 from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
@@ -99,13 +100,13 @@ class DocumentLLMHelper:
 
         print(f"Converted file uploaded to {convert_file_url} with filename {filename}")
         # Update the metadata to indicate that the file has been converted
-        self.blob_storage_client.update_metadata(filename, {"converted": "true"})
+        self.blob_storage_client.update_metadata(filename, {"converted": "true", "converted_filename": urllib.parse.quote(converted_filename)})
 
-        self.add_embeddings_lc(source_url=convert_file_url)
+        self.add_embeddings(source_url=convert_file_url, source_filename=filename)
 
         return converted_filename
 
-    def add_embeddings_lc(self, source_url):
+    def add_embeddings(self, source_url, source_filename):
         try:
             documents = WebBaseLoader(source_url).load()
 
@@ -137,11 +138,21 @@ class DocumentLLMHelper:
                 keys.append(hash_key)
                 doc.metadata = {"source": f"[{source_url}]({source_url}_SAS_TOKEN_PLACEHOLDER_)", "chunk": i, "key": hash_key, "filename": filename}
                 filenames.add(filename)
-                self.vector_store.add_documents(documents=docs, redis_url=self.vector_store.redis_url, index_name=self.vector_store.index_name, keys=keys)
+
+            self.vector_store.add_documents(documents=docs, redis_url=self.vector_store.redis_url, index_name=self.vector_store.index_name, keys=keys)
+
+            self.blob_storage_client.update_metadata(source_filename, {'embeddings_added': 'true'})
 
         except Exception as e:
             logging.error(f"Error adding embeddings for {source_url}: {e}")
             raise e
+
+    def delete_embeddings(self):
+        # self.vector_store.delete_keys_pattern()
+        self.vector_store.delete_all()
+
+    def get_files(self):
+        return self.blob_storage_client.get_files()
 
 
 if __name__ == "__main__":

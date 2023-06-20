@@ -37,7 +37,7 @@ class ConfluenceLoaderHelper:
             ocr_languages="eng+chi_sim"
         )
 
-    def get_all_spaces(self):
+    def get_spaces(self):
         response = self.confluence.get_all_spaces(space_type="global")
         results = response["results"]
         spaces = []
@@ -52,7 +52,7 @@ class ConfluenceLoaderHelper:
             spaces.append(space)
         return spaces
 
-    def get_all_pages_from_space(self, space_key: str, max_pages: Optional[int] = None):
+    def get_pages_from_space(self, space_key: str, max_pages: Optional[int] = None):
         start = 0
         limit = 50 if max_pages is None or max_pages <= 0 else min(50, max_pages)
         pages = []
@@ -68,7 +68,7 @@ class ConfluenceLoaderHelper:
                 break
         return pages
 
-    def load_single_page(self, page: dict):
+    def load_page(self, page: dict):
         doc = self.confluenceLoader.process_page(page, include_attachments=False, include_comments=False, ocr_languages="eng+chi_sim")
         if not doc.page_content:
             return None
@@ -77,11 +77,11 @@ class ConfluenceLoaderHelper:
         doc.metadata["last_edit_time"] = dt.strftime("%Y-%m-%d %H:%M:%S")
         return doc
 
-    def load_all_pages_from_space(self, space_key: str, max_pages: Optional[int] = -1) -> List[Document]:
+    def load_pages_from_space(self, space_key: str, max_pages: Optional[int] = -1) -> List[Document]:
         docs = []
-        pages = self.get_all_pages_from_space(space_key=space_key, max_pages=max_pages)
+        pages = self.get_pages_from_space(space_key=space_key, max_pages=max_pages)
         for page in pages:
-            doc = self.load_single_page(page)
+            doc = self.load_page(page)
             if doc:
                 docs.append(doc)
         return docs

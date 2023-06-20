@@ -15,7 +15,7 @@ COPY ./code /usr/local/src/azure-open-ai-qna
 # 删除自测页面（Dockerfile.dockerignore不好使，所以用了这种方法）
 RUN rm -rf Home.py
 
-RUN mv pages/01_Chat.py Chat.py
+RUN mv pages/Chat.py Chat.py
 
 EXPOSE 80
 CMD ["streamlit", "run", "Chat.py", "--server.port", "80", "--server.enableXsrfProtection", "false"]

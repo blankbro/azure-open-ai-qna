@@ -19,7 +19,7 @@ class RedisExtended(Redis):
         self.redis_url = f"redis://:{os.getenv('REDIS_PASSWORD')}@{os.getenv('REDIS_ADDRESS')}:{os.getenv('REDIS_PORT')}" if redis_url is None else redis_url
         self.index_name = "embeddings" if index_name is None else index_name
 
-        super().__init__(redis_url, index_name, embedding_function)
+        super().__init__(self.redis_url, self.index_name, embedding_function)
 
         # Check if index exists
         try:
@@ -60,3 +60,11 @@ class RedisExtended(Redis):
             fields=[result, filename, prompt],
             definition=IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
         )
+
+    def delete_keys_pattern(self, pattern: str = "*") -> None:
+        keys = self.client.keys(pattern)
+        for key in keys:
+            self.client.delete(key)
+
+    def delete_all(self):
+        self.client.flushall()

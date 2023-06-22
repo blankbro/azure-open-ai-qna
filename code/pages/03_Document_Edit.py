@@ -1,6 +1,7 @@
 import sys
 
 import streamlit as st
+import pandas as pd
 
 from pages.common.page_config import load_page_config
 from server.file_storage.azure_blob_storage import AzureBlobStorageClient
@@ -17,7 +18,7 @@ placeholder = st.empty()
 with st.expander("Convert file and add embeddings", expanded=False):
     files_data = llm_helper.get_files()
     file_count = len(files_data)
-    st.dataframe(files_data, column_order=("source_file_name", "converted", "embeddings_added", "source_file_url", "converted_file_url"))
+    st.dataframe(files_data, hide_index=False, column_order=("source_file_name", "converted", "embeddings_added", "source_file_url", "converted_file_url"))
     if st.button("提取pdf中的文本，并生成embeddings向量"):
         for i, file_data in enumerate(files_data):
             source_file_name = file_data["source_file_name"]

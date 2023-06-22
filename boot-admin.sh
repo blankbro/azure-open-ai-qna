@@ -20,7 +20,7 @@ fi
 docker build . -f App-Admin.Dockerfile -t azure-open-ai-qna:admin
 
 # 启动新容器
-docker run -d --env-file .env -p 8088:80 --name azure-open-ai-qna_admin azure-open-ai-qna:admin
+docker run -d --env-file .env -p 8081:80 --name azure-open-ai-qna_admin azure-open-ai-qna:admin
 
 # 清除未被使用的镜像及其数据
 docker image prune -a

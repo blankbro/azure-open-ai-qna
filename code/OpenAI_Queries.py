@@ -55,8 +55,8 @@ try:
                 {question} will be replaced with the user's question."""
         )
         st.number_input("Redisearch Top k", key='redisearch_topk', min_value=1, step=1, value=4, help="限制从Redis搜索到的最大Chunk数")
-        st.slider("Redisearch similarity score", key='redisearch_similarity_score', min_value=0.1, step=0.1, max_value=1.0, value=0.4, help="向量相似性：数值越小相似性要求越高")
-        st.selectbox("Redisearch type", key='redisearch_type', options=("similarity_limit", "similarity"), help="similarity_limit 模式下，要求搜索到的文本相似度必须大于 Redisearch similarity score")
+        st.slider("Redisearch similarity score", key='redisearch_similarity_score', min_value=0.0, step=0.1, max_value=1.0, value=0.4, help="向量相似性：数值越小相似性越高")
+        st.selectbox("Redisearch type", key='redisearch_type', options=("similarity_limit", "similarity"), help="similarity_limit 模式下，会根据 Redisearch similarity score 对搜索结果进行过滤")
 
     llm_helper = DocumentLLMHelper(
         completion_prompt=st.session_state.completion_prompt,

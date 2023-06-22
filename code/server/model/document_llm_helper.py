@@ -30,11 +30,6 @@ os.environ["OPENAI_API_KEY"] = os.getenv("AZURE_OPENAI_API_KEY")
 os.environ["OPENAI_API_BASE"] = os.getenv("AZURE_OPENAI_API_BASE")
 
 
-def generate_md_superlink_by_document(doc):
-    docurl = doc.metadata['source_file_url'].replace(" ", "%20")
-    return f"[{doc.metadata['source_file_name']}]({docurl}?_SAS_TOKEN_PLACEHOLDER_)"
-
-
 class DocumentLLMHelper:
     def __init__(
             self,
@@ -101,10 +96,16 @@ class DocumentLLMHelper:
         result = chain({"question": question, "chat_history": chat_history})
 
         context = "\n\n".join(list(map(lambda x: x.page_content, result['source_documents'])))
-        sources = "\n\n".join(set(map(lambda x: generate_md_superlink_by_document(x), result['source_documents'])))
+        sources = "\n\n".join(set(map(lambda x: self.generate_md_superlink_by_document(x), result['source_documents'])))
         sources = sources.replace('_SAS_TOKEN_PLACEHOLDER_', self.blob_storage_client.get_container_sas())
 
         return llm_chain_custom_handler.get_new_question(), result['answer'], sources, context
+
+    def generate_md_superlink_by_document(self, doc):
+        docurl = doc.metadata['source_file_url'].replace(" ", "%20")
+        if not docurl.startswith(self.blob_storage_client.get_http_base()):
+            return f"[{doc.metadata['source_file_name']}]({docurl})"
+        return f"[{doc.metadata['source_file_name']}]({docurl}?_SAS_TOKEN_PLACEHOLDER_)"
 
     def convert_file_and_add_embeddings(self, source_file_url: str = None):
         source_url = source_file_url.split('?')[0]
@@ -162,7 +163,7 @@ class DocumentLLMHelper:
                 doc.metadata = {
                     "source_file_name": source_file_name,
                     "source_file_key": source_file_key,
-                    "source_file_url": source_file_url.split('?')[0],
+                    "source_file_url": source_file_url.split('?')[0] if source_file_url.startswith(self.blob_storage_client.get_http_base()) else source_file_url,
                     "chunk": i
                 }
 

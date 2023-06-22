@@ -64,6 +64,9 @@ class AzureBlobStorageClient:
         # Generate a SAS URL to the blob and return it
         return f"https://{self.account_name}.blob.core.windows.net/{self.container_name}/{file_name}?{sas}"
 
+    def get_http_base(self):
+        return f"https://{self.account_name}.blob.core.windows.net/{self.container_name}"
+
     def get_files(self, name_starts_with: str = None):
         # 获取文件列表
         container_client = self.blob_service_client.get_container_client(self.container_name)
@@ -78,7 +81,7 @@ class AzureBlobStorageClient:
                 converted_files[blob.name] = self.get_blob_sas(blob.name, sas)
             else:
                 files.append({
-                    "source_file_name": blob.name.split("/")[-1],
+                    "source_file_name": blob.name.split("/")[-1].rstrip(".txt"),
                     "source_file_url": blob.metadata.get('confluence_url', self.get_blob_sas(blob.name, sas)),
                     "source_file_key": blob.name,
                     "embeddings_added": blob.metadata.get('embeddings_added', 'false') == 'true' if blob.metadata else False,
@@ -86,7 +89,7 @@ class AzureBlobStorageClient:
 
         # 补充 converted_path
         for file in files:
-            if file["source_file_name"].endswith('.txt'):
+            if file["source_file_key"].endswith('.txt'):
                 file['converted'] = True
                 file['converted_file_name'] = file['source_file_name']
                 file['converted_file_url'] = self.get_blob_sas(file['source_file_key'], sas)

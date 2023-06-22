@@ -13,11 +13,11 @@ llm_helper = DocumentLLMHelper()
 confluence_loader_helper = ConfluenceLoaderHelper()
 azure_blob_storage_client = AzureBlobStorageClient()
 
+placeholder = st.empty()
 with st.expander("Convert file and add embeddings", expanded=False):
     files_data = llm_helper.get_files()
     file_count = len(files_data)
     st.dataframe(files_data, column_order=("source_file_name", "converted", "embeddings_added", "source_file_url", "converted_file_url"))
-    placeholder = st.empty()
     if st.button("提取pdf中的文本，并生成embeddings向量"):
         for i, file_data in enumerate(files_data):
             source_file_name = file_data["source_file_name"]
@@ -34,7 +34,7 @@ with st.expander("Convert file and add embeddings", expanded=False):
                     source_file_key=source_file_key,
                     source_file_url=source_file_url
                 )
-        placeholder.empty()
+        placeholder.write("all is ok")
     if st.button("删除所有 embeddings 向量"):
         for i, file_data in enumerate(files_data):
             source_file_name = file_data["source_file_name"]
@@ -43,7 +43,7 @@ with st.expander("Convert file and add embeddings", expanded=False):
             if file_data["embeddings_added"]:
                 llm_helper.blob_storage_client.update_metadata(source_file_key, {'embeddings_added': 'false'})
         llm_helper.delete_embeddings()
-        placeholder.empty()
+        placeholder.write("all is ok")
 
 with st.expander("Edit confluence document"):
     # 获取所有空间
@@ -65,8 +65,6 @@ with st.expander("Edit confluence document"):
         # 获取空间的所有页面
         confluence_space_key = space_name_key_map[confluence_space_name]
         pages = confluence_loader_helper.get_pages_from_space(confluence_space_key, max_pages=-1)
-        st.write(f"共{len(pages)}个页面")
-        placeholder = st.empty()
 
         for i, page in enumerate(pages):
             placeholder.write(f"当前进度: {i + 1}/{len(pages)}【{page['title']}】")
@@ -74,13 +72,12 @@ with st.expander("Edit confluence document"):
             # 提取页面的文本
             doc = confluence_loader_helper.load_page(page)
             if not doc:
-                st.write(f"{i + 1}【{page['title']}】page content is empty")
                 continue
 
             # 上传到 Azure Blob Storage
             azure_blob_storage_client.upload_confluence_text(doc, confluence_space_name)
-            st.write(f"{i + 1}【{page['title']}】ok")
 
+        placeholder.write("all is ok")
     if st.button("Delete confluence from the knowledge base"):
         confluence_space_name = st.session_state["confluence_space_name"]
         if confluence_space_name == "None":
@@ -88,4 +85,4 @@ with st.expander("Edit confluence document"):
             sys.exit()
 
         azure_blob_storage_client.delete_files(f"confluence/{confluence_space_name}")
-        st.write("successful")
+        placeholder.write("all is ok")

@@ -38,7 +38,7 @@ for mysql_url in mysql_url_list:
     mysql_names.append(mysql_url[0])
     mysql_name_url_map[mysql_url[0]] = mysql_url[1]
 
-col1, col2 = st.columns([1, 9])
+col1, col2 = st.columns([2, 8])
 with col1:
     st.selectbox("Select DB", mysql_names, key="mysql_name")
 

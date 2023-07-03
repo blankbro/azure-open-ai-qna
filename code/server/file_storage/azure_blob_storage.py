@@ -23,13 +23,14 @@ class AzureBlobStorageClient:
         self.container_name: str = container_name if container_name else os.getenv("AZURE_BLOB_STORAGE_CONTAINER_NAME")
         self.blob_service_client: BlobServiceClient = BlobServiceClient.from_connection_string(self.connect_str)
 
-    def upload_confluence_text(self, doc: Document, confluence_space_name: str) -> str:
+    def upload_confluence_text(self, doc: Document, confluence_space_name: str, confluence_space_key: str) -> str:
         return self.upload_blob(
             data=doc.metadata["title"] + " " + doc.page_content,
             file_name=f"confluence/{confluence_space_name}/{doc.metadata['id']}/v{doc.metadata['version']}/{doc.metadata['title']}.txt",
             content_type='text/plain; charset=utf-8',
             metadata={
-                "confluence_url": doc.metadata["source"]
+                "confluence_url": doc.metadata["source"],
+                "confluence_space_key": confluence_space_key
             }
         )
 
@@ -85,6 +86,7 @@ class AzureBlobStorageClient:
                     "source_file_url": blob.metadata.get('confluence_url', self.get_blob_sas(blob.name, sas)),
                     "source_file_key": blob.name,
                     "embeddings_added": blob.metadata.get('embeddings_added', 'false') == 'true' if blob.metadata else False,
+                    "confluence_space_key": blob.metadata.get('confluence_space_key')
                 })
 
         # 补充 converted_path

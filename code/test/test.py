@@ -1,9 +1,10 @@
 import base64
 import os
+
 from dotenv import load_dotenv
 
-from server.text_loader.confluence_loader import ConfluenceLoaderHelper
 from server.file_storage.azure_blob_storage import AzureBlobStorageClient
+from server.text_loader.confluence_loader import ConfluenceLoaderHelper
 
 load_dotenv()
 
@@ -27,7 +28,7 @@ def upload_confluence():
     docs = confluenceHelper.load_pages_from_space("9CK", max_pages=1)
 
     azureBlobStorageClient = AzureBlobStorageClient()
-    source_url = azureBlobStorageClient.upload_confluence_text(docs[0], "9CK")
+    source_url = azureBlobStorageClient.upload_confluence_text(docs[0], "9CK", "9CK")
     print(source_url)
 
 

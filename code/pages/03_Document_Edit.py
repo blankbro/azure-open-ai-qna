@@ -1,7 +1,6 @@
 import sys
 
 import streamlit as st
-import pandas as pd
 
 from pages.common.page_config import load_page_config
 from server.file_storage.azure_blob_storage import AzureBlobStorageClient
@@ -25,6 +24,7 @@ with st.expander("Convert file and add embeddings", expanded=False):
             source_file_key = file_data["source_file_key"]
             source_file_url = file_data["source_file_url"]
             converted_file_url = file_data["converted_file_url"]
+            confluence_space_key = file_data["confluence_space_key"]
             placeholder.write(f"当前进度: {i + 1}/{file_count}【{source_file_name}】")
             if file_data.get("converted") is False and not source_file_name.endswith('.txt'):
                 llm_helper.convert_file_and_add_embeddings(source_file_url=source_file_url)
@@ -33,7 +33,8 @@ with st.expander("Convert file and add embeddings", expanded=False):
                     converted_file_url=converted_file_url,
                     source_file_name=source_file_name,
                     source_file_key=source_file_key,
-                    source_file_url=source_file_url
+                    source_file_url=source_file_url,
+                    confluence_space_key=confluence_space_key
                 )
         placeholder.write("all is ok")
     if st.button("删除所有 embeddings 向量"):
@@ -57,7 +58,7 @@ with st.expander("Edit confluence document"):
 
     st.selectbox("Select confluence space", space_names, key="confluence_space_name")
 
-    if st.button("Convert confluence"):
+    if st.button("提取 Confluence 中的文本"):
         confluence_space_name = st.session_state["confluence_space_name"]
         if confluence_space_name == "None":
             st.warning("请先选择空间")
@@ -76,14 +77,23 @@ with st.expander("Edit confluence document"):
                 continue
 
             # 上传到 Azure Blob Storage
-            azure_blob_storage_client.upload_confluence_text(doc, confluence_space_name)
+            azure_blob_storage_client.upload_confluence_text(doc, confluence_space_name, confluence_space_key)
 
         placeholder.write("all is ok")
-    if st.button("Delete confluence from the knowledge base"):
+    if st.button("删除 Confluence 文本"):
         confluence_space_name = st.session_state["confluence_space_name"]
         if confluence_space_name == "None":
             st.warning("请先选择空间")
             sys.exit()
 
         azure_blob_storage_client.delete_files(f"confluence/{confluence_space_name}")
+        placeholder.write("all is ok")
+    if st.button("删除 Confluence embeddings 向量"):
+        confluence_space_name = st.session_state["confluence_space_name"]
+        if confluence_space_name == "None":
+            st.warning("请先选择空间")
+            sys.exit()
+
+        confluence_space_key = space_name_key_map[confluence_space_name]
+        llm_helper.delete_embeddings_of_confluence(confluence_space_key)
         placeholder.write("all is ok")

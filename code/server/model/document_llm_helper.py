@@ -134,7 +134,7 @@ class DocumentLLMHelper:
 
         return converted_file_key
 
-    def add_embeddings(self, converted_file_url, source_file_name, source_file_key, source_file_url):
+    def add_embeddings(self, converted_file_url, source_file_name, source_file_key, source_file_url, confluence_space_key):
         try:
             documents = WebBaseLoader(converted_file_url).load()
 
@@ -159,7 +159,10 @@ class DocumentLLMHelper:
             for i, doc in enumerate(docs):
                 # Create a unique key for the document
                 hash_key = hashlib.sha1(f"{source_file_key}".encode('utf-8')).hexdigest()
-                keys.append(f"doc:{self.vector_store.index_name}:{hash_key}:{i}")
+                if confluence_space_key:
+                    keys.append(f"doc:{self.vector_store.index_name}:{confluence_space_key}:{hash_key}:{i}")
+                else:
+                    keys.append(f"doc:{self.vector_store.index_name}:{hash_key}:{i}")
                 doc.metadata = {
                     "source_file_name": source_file_name,
                     "source_file_key": source_file_key,
@@ -176,8 +179,13 @@ class DocumentLLMHelper:
             raise e
 
     def delete_embeddings(self):
-        # self.vector_store.delete_keys_pattern()
         self.vector_store.delete_all()
+
+    def delete_embeddings_pattern(self, pattern: str = "*"):
+        self.vector_store.delete_keys_pattern(pattern)
+
+    def delete_embeddings_of_confluence(self, confluence_space_key: str):
+        self.vector_store.delete_keys_pattern(f"doc:{self.vector_store.index_name}:{confluence_space_key}:*")
 
     def get_files(self):
         return self.blob_storage_client.get_files()

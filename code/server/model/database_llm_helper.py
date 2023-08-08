@@ -1,8 +1,9 @@
 import os
 
 from dotenv import load_dotenv
-from langchain import SQLDatabase, SQLDatabaseChain
 from langchain.chat_models import AzureChatOpenAI
+from langchain.sql_database import SQLDatabase
+from langchain_experimental.sql import SQLDatabaseChain
 
 load_dotenv()
 
@@ -31,7 +32,7 @@ class DatabaseLLMHelper:
         question = f"{prompt} reply in 中文"
         result = self.db_chain(question)
         if len(result["intermediate_steps"]) == 6:
-            return result["result"], result["intermediate_steps"][1], result["intermediate_steps"][3]
+            return result["result"], result["intermediate_steps"][1], result["intermediate_steps"][3].lstrip("[(").rstrip(",)]")
         return result
 
 

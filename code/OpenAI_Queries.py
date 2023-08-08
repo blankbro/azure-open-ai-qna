@@ -1,7 +1,6 @@
 import traceback
 
 import streamlit as st
-from streamlit_chat import message
 
 from pages.common.page_config import load_page_config
 from server.model.custom_prompt import completion_prompt_template
@@ -11,15 +10,7 @@ load_page_config()
 
 
 def clear_chat_data():
-    st.session_state['00_input'] = ""
-    st.session_state['00_chat_history'] = []
-
-
-def send_msg():
-    if st.session_state['00_input']:
-        new_question, answer, sources, contents = llm_helper.get_response(st.session_state['00_input'], st.session_state['00_chat_history'])
-        st.session_state['00_chat_history'].append((st.session_state['00_input'], answer, sources, new_question, contents))
-        st.session_state['00_input'] = ""
+    st.session_state.zero_messages = []
 
 
 def check_completion_prompt():
@@ -41,8 +32,10 @@ def check_completion_prompt():
 
 
 try:
-    if '00_chat_history' not in st.session_state:
-        st.session_state['00_chat_history'] = []
+    if 'zero_messages' not in st.session_state:
+        st.session_state.zero_messages = []
+    if 'zero_history' not in st.session_state:
+        st.session_state.zero_history = []
 
     with st.expander("Settings"):
         st.slider("Temperature", key='temperature', min_value=0.0, max_value=1.0, step=0.1, value=0.2)
@@ -66,32 +59,46 @@ try:
         redisearch_type=st.session_state.redisearch_type
     )
 
-    col1, col2 = st.columns([8, 2])
+    # Display chat messages from history on app rerun
+    for message in st.session_state.zero_messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            if "source" in message and message["source"]:
+                st.markdown(f'\n\nSources: {message["source"]}')
+            if "new_question" in message and message["new_question"]:
+                st.markdown(f'New question: {message["new_question"]}')
+            if "similarity_chunk" in message and message["similarity_chunk"]:
+                with st.expander("Similarity chunk"):
+                    st.markdown(f'{message["similarity_chunk"]}')
 
-    with col1:
-        st.text_input("You: ", placeholder="type your question", key="00_input")
-
-    with col2:
-        st.text("")
-        st.text("")
-        st.button("Send", on_click=send_msg)
-
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        clear_chat = st.button("Clear chat", key="clear_chat", on_click=clear_chat_data)
-
-    if st.session_state['00_chat_history']:
-        for i in range(len(st.session_state['00_chat_history']) - 1, -1, -1):
-            message(st.session_state['00_chat_history'][i][1], key=str(i))
-            if st.session_state["00_chat_history"][i][2]:
-                st.markdown(f'Sources: {st.session_state["00_chat_history"][i][2]}')
-            with st.expander("Debug"):
-                if st.session_state["00_chat_history"][i][3]:
-                    st.markdown(f'New Question: {st.session_state["00_chat_history"][i][3]}')
-                if st.session_state["00_chat_history"][i][4]:
-                    st.markdown(f'Similarity chunk: {st.session_state["00_chat_history"][i][4]}')
-            message(st.session_state['00_chat_history'][i][0], is_user=True, key=str(i) + '_user')
+    # Accept user input
+    if prompt := st.chat_input("type your question"):
+        # Add user message to chat history
+        st.session_state.zero_messages.append({"role": "user", "content": prompt})
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            # ask openai
+            new_question, answer, sources, contents = llm_helper.get_response(prompt, st.session_state.zero_history)
+            st.markdown(answer)
+            st.markdown(f'\n\nSources: {sources}')
+            if new_question:
+                st.markdown(f'New question: {new_question}')
+            if contents:
+                with st.expander("Similarity chunk"):
+                    st.markdown(f'{contents}')
+        # Add assistant response to chat history
+        st.session_state.zero_messages.append({
+            "role": "assistant",
+            "content": answer,
+            "source": sources,
+            "new_question": new_question,
+            "similarity_chunk": contents,
+        })
+        st.session_state.zero_history.append((prompt, answer))
+        st.button("Clear chat", key="clear_chat", on_click=clear_chat_data)
 except Exception:
     traceback.print_exc()
     st.error(traceback.format_exc())
